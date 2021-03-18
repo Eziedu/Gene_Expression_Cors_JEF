@@ -1,0 +1,16 @@
+Package: geneExpCor
+Title: Gene Correlation Analysis
+Version: 0.0.0.9000
+Authors@R: 
+    person(given = "Jon",
+           family = "Blichar",
+           role = c("aut", "cre"),
+           email = "first.last@example.com",
+           comment = c(ORCID = "YOUR-ORCID-ID"))
+Description: A package that takes two gene data files and produces graphics and correlation information based on preferred method and gene variability. Methods include, 'pearson', 'Spearman', and 'Biweight MidCorrelation' where the biweight method is the default parameter. The operation and optimization of the function is still in progress
+License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
+    license
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.1.9001
