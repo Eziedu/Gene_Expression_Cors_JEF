@@ -1,7 +1,6 @@
-#Collective updated Main script
-# Yo
-# felipe edited this comment
-# tesing out the pipeline
+
+#Collective Updated Main script
+
 #' Gene Expression Correlations Amongst Tissue Samples.
 #'
 #'
