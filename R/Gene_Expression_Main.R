@@ -1,5 +1,5 @@
-#Collective updated Main script
-#Workspace edit for test number 2 
+#Collective Updated Main script
+
 #' Gene Expression Correlations Amongst Tissue Samples.
 #'
 #'
