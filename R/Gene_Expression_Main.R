@@ -1,4 +1,9 @@
+<<<<<<< HEAD
 #Collective Updated Main Script
+=======
+
+#Collective Updated Main script
+>>>>>>> 423d09c7c2f3fd4008e7ea04676dfc23530372e3
 
 #' Gene Expression Correlations Amongst Tissue Samples.
 #'

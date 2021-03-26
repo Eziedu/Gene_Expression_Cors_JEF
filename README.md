@@ -1,6 +1,8 @@
 # Gene_Expression_Cors_JEF
 Developing R package for Capstone project. 
 
+package name: geneExpCor
+
 R folder contains the main script with the tissue expression and comparison function. 
 
 Current iteration of package:
