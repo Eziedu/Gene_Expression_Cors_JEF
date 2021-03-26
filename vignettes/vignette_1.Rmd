@@ -1,0 +1,90 @@
+---
+title: "GeneExpCor_Vignette"
+author: "Felipe Barraza, Jon Blichar, Emmanuel Edu"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+## Overview
+This developing vignette is for the `geneExpCor` Rpackage which is capable of receiving tissue data and outputting correlation values corresponding to matching genes. Several functions are including that grant the user the capability to filter by variance percentage and by ligands. Main Functions:
+
+- tissue_pair_expression
+- gene_names
+- var_filter
+
+
+## Dependencies
+- `devtools`: https://cran.r-project.org/web/packages/devtools/index.html 
+- `testthat`: https://testthat.r-lib.org/ Version 3.0 or above
+- `WGCNA`: https://horvath.genetics.ucla.edu/html/CoexpressionNetwork/Rpackages/WGCNA/ 
+- `iemisc`: https://cran.rstudio.com/web/packages/iemisc/index.html 
+- `dpylr`: https://www.tidyverse.org/ 
+
+## Installation
+
+### 1. Installing From Github
+After dependencies have been installed and loaded, installing `geneExpCor` from github requires the following line: `devtools::install_github("Eziedu/Gene_Expression_Cors_JEF")` <br/>
+
+### 1.2 Addressing Installation Errors
+If there is an error with loading `devtools`, it is most likely due to a version issue. The devtools package uses the `testthat`package, and in order for devtools to run appropriately the loaded `testhat` package needs to be of version 3.0 or higher. <br/> <br/>
+If a simple update does not solve the problem, run the following line to update `testthat`: `install.packages("rlang", dependencies = c("Depends", "Imports", "LinkingTo", "Suggests"))`<br/> <br/>
+Follow the installation process as you see fit, afterwards the `testthat` package should update to version 3.0 or above. 
+<br/>
+
+## Functions
+### tissue_pair_gene_expression()
+This function takes in four parameters: two tissue matrices, variance percentage, and the type of correlation analysis. The current version of this function only accepts tissue matrices(`tissue_1_matrix` and `tissue_2_matrix`) as tables that contain the gene identifiers as rows and the donor identifiers as columns. 
+<br/> The `variance_percentage` receieves a number between 0 and 1. 
+<br/> For the `correlation_method` the current version of this function is only able to produce viable outputs for biweight midcorrelations. Therefore the `correlation_method` is currently defaulted to conduct biweight midcorrelation.  
+```{r}
+tissue_pair_gene_expression <- function(tissue_1_matrix,tissue_2_matrix,variance_percentage,correlation_method) {
+  ...}
+```
+<br/> 
+## Styles
+
+The `html_vignette` template includes a basic CSS theme. To override this theme you can specify your own CSS in the document metadata as follows:
+
+    output: 
+      rmarkdown::html_vignette:
+        css: mystyles.css
+
+## Figures
+
+The figure sizes have been customised so that you can easily put two images side-by-side. 
+
+```{r, fig.show='hold'}
+plot(1:10)
+plot(10:1)
+```
+
+You can enable figure captions by `fig_caption: yes` in YAML:
+
+    output:
+      rmarkdown::html_vignette:
+        fig_caption: yes
+
+Then you can use the chunk option `fig.cap = "Your figure caption."` in **knitr**.
+
+## More Examples
+
+You can write math expressions, e.g. $Y = X\beta + \epsilon$, footnotes^[A footnote here.], and tables, e.g. using `knitr::kable()`.
+
+```{r, echo=FALSE, results='asis'}
+knitr::kable(head(mtcars, 10))
+```
+
+Also a quote using `>`:
+
+> "He who gives up [code] safety for [code] speed deserves neither."
+([via](https://twitter.com/hadleywickham/status/504368538874703872))
