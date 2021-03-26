@@ -1,7 +1,7 @@
 Version: 1.0
 
-RestoreWorkspace: Default
-SaveWorkspace: Default
+RestoreWorkspace: No
+SaveWorkspace: No
 AlwaysSaveHistory: Default
 
 EnableCodeIndexing: Yes
@@ -12,18 +12,12 @@ Encoding: UTF-8
 RnwWeave: Sweave
 LaTeX: pdfLaTeX
 
+AutoAppendNewline: Yes
+StripTrailingWhitespace: Yes
+LineEndingConversion: Posix
+
 BuildType: Package
 PackageUseDevtools: Yes
 PackageInstallArgs: --no-multiarch --with-keep.source
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-
+PackageCheckArgs: --no-manual
 PackageRoxygenize: rd,collate,namespace,vignette
-
->>>>>>> 423d09c7c2f3fd4008e7ea04676dfc23530372e3
-=======
-
-PackageRoxygenize: rd,collate,namespace,vignette
-
->>>>>>> 423d09c7c2f3fd4008e7ea04676dfc23530372e3
