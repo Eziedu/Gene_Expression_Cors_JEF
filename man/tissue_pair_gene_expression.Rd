@@ -4,12 +4,7 @@
 \alias{tissue_pair_gene_expression}
 \title{Gene Expression Correlations Amongst Tissue Samples.}
 \usage{
-tissue_pair_gene_expression(
-  tissue_1_matrix,
-  tissue_2_matrix,
-  variance_percentage,
-  correlation_method
-)
+tissue_pair_gene_expression(tissue_1_matrix, tissue_2_matrix)
 }
 \arguments{
 \item{tissue_1_matrix}{A file containing gene-donor data of the first tissue}
