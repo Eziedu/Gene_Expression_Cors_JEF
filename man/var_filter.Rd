@@ -7,12 +7,17 @@
 var_filter(tissue_matrix_1, tissue_matrix_2, percentage_variance)
 }
 \arguments{
-\item{tissue_matrix_1}{A file containing gene-donor data of the first tissue}
+\item{tissue_matrix_1}{A file containing gene-donor data of the first tissue. Recommend using 'final_tissue_1.matrix' acquired from the use of gene_names()}
 
-\item{tissue_matrix_2}{A file containing gene-donor data of the second tissue}
+\item{tissue_matrix_2}{A file containing gene-donor data of the second tissue. Recommend using'final_tissue_2.matrix' acquired from the use of gene_names()}
 
 \item{percentage_variance}{A decimal entry representing the variance percentage for gene analysis.}
 }
+\value{
+A matrix of the
+}
 \description{
 Functions that takes tissue matrices and variance percentage and outputs matrices of the most variable genes for each tissue set.
+This function is primarily utilized with inputted tissue sets with matching donors and genes.
+Therefore the var_filter function serves as the supplement after the use of the function \code{gene_names} which outputs matching donor/gene tissue matrices.
 }

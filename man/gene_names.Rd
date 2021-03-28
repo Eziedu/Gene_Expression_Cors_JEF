@@ -12,7 +12,7 @@ gene_names(tissue_matrix_1, tissue_matrix_2)
 \item{tissue_2_matrix}{A file containing gene-donor data of the second tissue}
 }
 \value{
-Two matrices as variables in the global environment
+Two matrices with matching donors and genes across both tissue sets. Both outputted matrices are viable for correlation analysis as inputs for the function
 }
 \description{
 Takes in two tissue data sets and attempts to match the genes within both tissues. Returns two matrices for each tissue with the matching genes.
