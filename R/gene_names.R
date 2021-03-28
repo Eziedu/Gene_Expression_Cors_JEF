@@ -5,24 +5,24 @@
 #'
 #'@param tissue_1_matrix A file containing gene-donor data of the first tissue
 #'@param tissue_2_matrix A file containing gene-donor data of the second tissue
-#'@return Two matrices as variables in the global environment
+#'@return Two matrices with matching donors and genes across both tissue sets. Both outputted matrices are viable for correlation analysis as inputs for the function
 #'@export
 #'@example
 #'tissue_pair_gene_expression(tissue_1, tissue_2)
 
-gene_names <- function(tissue_matrix_1,tissue_matrix_2){
+gene_names <- function(tissue_1_matrix,tissue_2_matrix){
   ## Create a list of column names for downstream matching of donors
   tissue_1.samples = colnames(tissue_1_matrix)
   tissue_2.samples = colnames(tissue_2_matrix)
 
   ## Separate strings of column names to match donor tag identifiers
   tissue_1.subjects = sapply(tissue_1.samples,function(x){
-    subj = strsplit(x,'[.]')[[1]]
+    subj = strsplit(x,'[-]')[[1]]
     out = paste0(subj[1],'_',subj[2])
     return(out)
   })
   tissue_2.subjects = sapply(tissue_2.samples,function(x){
-    subj = strsplit(x,'[.]')[[1]]
+    subj = strsplit(x,'[-]')[[1]]
     out = paste0(subj[1],'_',subj[2])
     return(out)
   })
