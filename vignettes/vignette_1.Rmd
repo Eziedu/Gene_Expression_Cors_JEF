@@ -18,9 +18,9 @@ knitr::opts_chunk$set(
 ## Overview
 This developing vignette is for the `geneExpCor` Rpackage which is capable of receiving tissue data and outputting correlation values corresponding to matching genes. Several functions are including that grant the user the capability to filter by variance percentage and by ligands. Main Functions:
 
-- tissue_pair_expression
-- gene_names
-- var_filter
+- tissue_pair_expression()
+- gene_names()
+- var_filter()
 
 
 ## Dependencies
@@ -33,21 +33,29 @@ This developing vignette is for the `geneExpCor` Rpackage which is capable of re
 ## Installation
 
 ### 1. Installing From Github
-After dependencies have been installed and loaded, installing `geneExpCor` from github requires the following line: `devtools::install_github("Eziedu/Gene_Expression_Cors_JEF")` <br/>
+After dependencies have been installed and loaded, installing `geneExpCor` from github requires the following line:  
+
+ `devtools::install_github("Eziedu/Gene_Expression_Cors_JEF")`
 
 ### 1.2 Addressing Installation Errors
-If there is an error with loading `devtools`, it is most likely due to a version issue. The devtools package uses the `testthat`package, and in order for devtools to run appropriately the loaded `testhat` package needs to be of version 3.0 or higher. <br/> <br/>
-If a simple update does not solve the problem, run the following line to update `testthat`: `install.packages("rlang", dependencies = c("Depends", "Imports", "LinkingTo", "Suggests"))`<br/> <br/>
+If there is an error with loading `devtools`, it is most likely due to a version issue. The devtools package uses the `testthat`package, and in order for devtools to run appropriately the loaded `testhat` package needs to be of version 3.0 or higher.
+
+If a simple update does not solve the problem, run the following line to update `testthat`:
+
+`install.packages("rlang", dependencies = c("Depends", "Imports", "LinkingTo", "Suggests"))`
+
 Follow the installation process as you see fit, afterwards the `testthat` package should update to version 3.0 or above. 
 
 ### 2. Loading Necessary Data
-To properly use the following functions, the inputted data needs to be in a specific format. To allow for easy testing, the package comes with two preinstalled tissue datasets: `subqAdipose_tissue_data` and `stomach_tissue_data`. To properly access both datasets, we recommend attributing each set to a variable in the global enviornment. For example, run the following lines in the console: 
+To properly use the following functions, the inputted data needs to be in a specific format. To allow for easy testing, the package comes with two preinstalled tissue datasets: `subqAdipose_tissue_data` and `stomach_tissue_data`.
+
+To properly access both datasets, we recommend attributing each set to a variable in the global enviornment. For example, run the following lines in the console: 
 ```{r}
 tissue_1_data <- geneExpCor::subqAdipose_tissue_data
 tissue_2_data <- geneExpCor::stomach_tissue_data
 ```
 Now that both tissue sets are loaded in the global environment, they can be used as arguments to fulfill the `tissue_matrix` parameters for all functions in the package. 
-<br/>
+
 
 ## Functions
 ### tissue_pair_gene_expression() Version 1
@@ -77,7 +85,8 @@ tissue_pair_gene_expression <- function(tissue_1_matrix,tissue_2_matrix) {
   combined_tissue.subjects = intersect(tissue_1.subjects,tissue_2.subjects)
 ...}
 ```
-<br/> After the matching donors are placed into a list, two `sapply` functions are used to sift through the combined list to identify the donor data that belongs to their respective tissues. The matched donors of each tissue are placed into two separate lists under `donor_matched_tissue_1.matrix` and `donor_matched_tissue_2.matrix`. 
+
+After the matching donors are placed into a list, two `sapply` functions are used to sift through the combined list to identify the donor data that belongs to their respective tissues. The matched donors of each tissue are placed into two separate lists under `donor_matched_tissue_1.matrix` and `donor_matched_tissue_2.matrix`. 
 ```{r}
 tissue_pair_gene_expression <- function(tissue_1_matrix,tissue_2_matrix) {
   ...
@@ -94,7 +103,7 @@ tissue_pair_gene_expression <- function(tissue_1_matrix,tissue_2_matrix) {
   donor_matched_tissue_2.matrix = tissue_2_matrix[,ind.tissue_2]
   ...}
 ```
-<br/> Next, the genes from each tissue are selected and compared to store matching genes in a list. The list of matching genes are attributed to the matching donors in the variables `final_tissue_1.matrix` and `final_tissue_2.matrix`.
+Next, the genes from each tissue are selected and compared to store matching genes in a list. The list of matching genes are attributed to the matching donors in the variables `final_tissue_1.matrix` and `final_tissue_2.matrix`.
 
 ```{r}
 tissue_pair_gene_expression <- function(tissue_1_matrix,tissue_2_matrix) {
@@ -128,7 +137,7 @@ tissue_pair_gene_expression <- function(tissue_1_matrix,tissue_2_matrix) {
 
 ...}
 ```
-<br/> The variances are then filtered according to variance percentage which is based on user input.
+The variances are then filtered according to variance percentage which is based on user input.
 ```{r}
 tissue_pair_gene_expression <- function(tissue_1_matrix,tissue_2_matrix) {
   ...
@@ -235,6 +244,7 @@ var_filter <- function(tissue_matrix_1,tissue_matrix_2,percentage_variance){
 ```
 
 ### Future Function updates
--Plan on improving `tissue_pair_expression()` to allow for 'pearson' and 'spearman' correlations. <br/>
+-Plan on improving `tissue_pair_expression()` to allow for 'pearson' and 'spearman' correlations.
+
 -Adding more functions that increase flexibility of analysis: ligand filtration
 
