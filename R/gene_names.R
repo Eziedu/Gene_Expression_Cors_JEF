@@ -1,16 +1,17 @@
 #'
 #' Matrices of Matching Genes
 #'
-#'Takes in two tissue data sets and attempts to match the genes within both tissues. Returns two matrices for each tissue with the matching genes.
+#'Takes in two tissue data sets and attempts to match the genes within both tissues.
+#'This function also attempts to label the genes with the proper gene names.
+#'Returns two matrices for each tissue with the matching genes.
 #'
 #'@param tissue_1_matrix A file containing gene-donor data of the first tissue
 #'@param tissue_2_matrix A file containing gene-donor data of the second tissue
+#'@param ensembl_map A gene mapping file used to attribute genes to their respective names. Use: gene_map from 2. in the Installation section of the vignette.
 #'@return Two matrices with matching donors and genes across both tissue sets. Both outputted matrices are viable for correlation analysis as inputs for the function
 #'@export
-#'@example
-#'tissue_pair_gene_expression(tissue_1, tissue_2)
 
-gene_names <- function(tissue_1_matrix,tissue_2_matrix){
+gene_names <- function(tissue_1_matrix,tissue_2_matrix,ensembl_map){
   ## Create a list of column names for downstream matching of donors
   tissue_1.samples = colnames(tissue_1_matrix)
   tissue_2.samples = colnames(tissue_2_matrix)
@@ -55,8 +56,17 @@ gene_names <- function(tissue_1_matrix,tissue_2_matrix){
   final_tissue_1.matrix = donor_matched_tissue_1.matrix[ind.gene_tissue_1,]
   final_tissue_2.matrix = donor_matched_tissue_2.matrix[ind.gene_tissue_2,]
 
+  ## Swap the ensembl gene identifiers with appropriate gene names
+  indices <- match(rownames(final_tissue_1.matrix),ensembl_map[,1])
+  gene_ids <- ensembl_map[indices,2]
+  ugene_ids_indices <- !duplicated(gene_ids)
+  ugene_ids <- unique(gene_ids)
+  final_tissue_1.matrix <- final_tissue_1.matrix[ugene_ids_indices,]
+  final_tissue_2.matrix <- final_tissue_2.matrix[ugene_ids_indices,]
+  rownames(final_tissue_1.matrix) <- ugene_ids
+  rownames(final_tissue_2.matrix) <- ugene_ids
+
   assign("final_tissue_1.matrix",final_tissue_1.matrix, envir = globalenv())
   assign("final_tissue_2.matrix",final_tissue_2.matrix, envir = globalenv())
-
 
 }

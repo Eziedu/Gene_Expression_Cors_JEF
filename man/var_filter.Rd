@@ -14,10 +14,13 @@ var_filter(tissue_matrix_1, tissue_matrix_2, percentage_variance)
 \item{percentage_variance}{A decimal entry representing the variance percentage for gene analysis.}
 }
 \value{
-A matrix of the
+Two matricies of the most variable genes according to variance percentage.
 }
 \description{
 Functions that takes tissue matrices and variance percentage and outputs matrices of the most variable genes for each tissue set.
 This function is primarily utilized with inputted tissue sets with matching donors and genes.
 Therefore the var_filter function serves as the supplement after the use of the function \code{gene_names} which outputs matching donor/gene tissue matrices.
+}
+\details{
+var_filter details
 }

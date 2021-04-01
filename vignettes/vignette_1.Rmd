@@ -3,8 +3,8 @@ title: "GeneExpCor_Vignette"
 author: "Felipe Barraza, Jon Blichar, Emmanuel Edu"
 date: "`r Sys.Date()`"
 output:
-  word_document: default
   pdf_document: default
+  word_document: default
 vignette: |
   %\VignetteIndexEntry{Vignette Title} %\VignetteEngine{knitr::rmarkdown} %\VignetteEncoding{UTF-8}
 ---
@@ -29,6 +29,7 @@ This developing vignette is for the `geneExpCor` Rpackage which is capable of re
 - `WGCNA`: https://horvath.genetics.ucla.edu/html/CoexpressionNetwork/Rpackages/WGCNA/ 
 - `iemisc`: https://cran.rstudio.com/web/packages/iemisc/index.html 
 - `dpylr`: https://www.tidyverse.org/ 
+- `parallel`: https://stat.ethz.ch/R-manual/R-devel/library/parallel/doc/parallel.pdf 
 
 ## Installation
 
@@ -54,197 +55,75 @@ To properly access both datasets, we recommend attributing each set to a variabl
 tissue_1_data <- geneExpCor::subqAdipose_tissue_data
 tissue_2_data <- geneExpCor::stomach_tissue_data
 ```
-Now that both tissue sets are loaded in the global environment, they can be used as arguments to fulfill the `tissue_matrix` parameters for all functions in the package. 
+Addtionally a gene mapping dataset will need to be loaded to properly label gene names during analysis. This map is referred to as 'gene_map' and we recommend to load this data into the global enviornment. 
 
+```{r}
+gene_map <- geneExpCor::gencode_gene_map
+```
+
+The `gene_map` variable can now be used for susequent functions with the `ensembl_map` parameter. 
+
+Now that the gene map and both tissue sets have been loaded in the global environment, they can be used as arguments to fulfill the `tissue_matrix` parameters for all functions in the package. 
+
+
+## Formatting Data 
+
+### gene_names() - Filtering Data to Identify Matching Genes 
+To begin analysis the `gene_names` function will be used first. `gene_names()` takes in two tissue data sets and attempts to match the genes within both tissues and returns two matrices for each tissue with the matching genes. The `ensembl_map` parameter takes in a gene coding map to properly label the gene names in the dataset. 
+
+```{r}
+gene_names <- function(tissue_1_matrix,tissue_2_matrix,ensembl_map){
+}
+```
+The outputted matrices are loaded in the global environment containing the matching donor and gene data present in both tissues. Therefore, both matricies have smaller dimensions than the original tissue data sets. 
+
+The `final_tissue.matrix` matricies are in the proper form and can be used for `var_filter()` and `tissue_pair_expression()`.
 
 ## Functions
-### tissue_pair_gene_expression() Version 1
-This function takes in two tissue matrices. The current version of this function only accepts tissue matrices(`tissue_1_matrix` and `tissue_2_matrix`) as tables that contain the gene identifiers as rows and the donor identifiers as columns. The current version of this function is only able to produce viable outputs for biweight midcorrelations.
+
+### Inuput Parameters
+`tissue_1_matrix` - A matrix containing the tissue sample data of genes and donors.
+
+`tissue_2_matrix` - A matrix containing the tissue sample data of genes and donors.
+
+`ensembl_map` - Gene coding map
+
+`percentage_variance` - A decimal input specifying variance percentage for analysis
+
+## Output Variables
+`final_tissue_1.matrix` - Matrix containing the matching genes and donors from orginial tissue sets
+
+`final_tissue_2.matrix` - Matrix containing the matching genes and donors from orginial tissue sets
+
+`variable.tissue_1.genes` - Filtered set of most variable genes according to `percentage_variance` in `var_filter()`
+
+`variable.tissue_2.genes` - Filtered set of most variable genes according to `percentage_variance` in `var_filter()`
+
+`gene_biweight_midcorrelation()` - Large matrix containing the biweight midcorrelation coefficients for both tissue sets
+
+`pvalues_biweight` - Large matrix containing the pvalues for each gene across both tissues.
+
+### var_filter() - Filtering for Most Variable Genes
+To filter tissue matricies according to variance, the `var_filter` function should be utilized. This function takes two tissue matrices and a variance percentage and outputs matrices of the most variable genes for each tissue set. This function is primarily utilized with tissue sets containing matching genes and donors: `final_tissue_1.matrix`. 
+ 
+ This function will return two lists of the most variable genes based on the `variance_percentage` parameter. 
+```{r}
+var_filter <- function(tissue_matrix_1,tissue_matrix_2, percentage_variance){
+}
+```
+The outputted matricies `variable.tissue_1.genes` and `variable.tissue_2.genes` contain the most variable genes amongst both tissue sets and will therefore have smaller dimensions than the inputted tissue sets. 
+
+
+### tissue_pair_gene_expression() - Conducting Biweight Midcorrelation Analysis
+To conduct the biweight midcorrelation analysis on the tissue sets the `tissue_pair_gene_expression` function. 
+This function takes in two tissue matrices and return two large matrices containing biweight midcorrelation coefficients and pvalues associated with both tissue sets. 
 ```{r}
 tissue_pair_gene_expression <- function(tissue_1_matrix,tissue_2_matrix) {}
 ```
-<br/> The following lines of code seperate the columns names from the inputted tissue data matrices and separates them to match the donor identifiers. This is stored into two separate variables which will be used to identify the matching genes between both tissues. 
-```{r}
-tissue_pair_gene_expression <- function(tissue_1_matrix,tissue_2_matrix) {
-## Create a list of column names for downstream matching of donors
-  tissue_1.samples = colnames(tissue_1_matrix)
-  tissue_2.samples = colnames(tissue_2_matrix)
 
-  ## Separate strings of column names to match donor tag identifiers
-  tissue_1.subjects = sapply(tissue_1.samples,function(x){
-    subj = strsplit(x,'[-]')[[1]]
-    out = paste0(subj[1],'_',subj[2])
-    return(out)
-  })
-  tissue_2.subjects = sapply(tissue_2.samples,function(x){
-    subj = strsplit(x,'[-]')[[1]]
-    out = paste0(subj[1],'_',subj[2])
-    return(out)
-  })
-#combined_tissue.subjects is a list of the matching genes from both tissues and thus should be a smaller size than both tissue_subjects variables. 
-  combined_tissue.subjects = intersect(tissue_1.subjects,tissue_2.subjects)
-...}
-```
+The outputted variables, `gene_biweight_midcorrelation` and `pvalues_biweight` are used to identify the corrlelations of the genes in both tissues matricies. 
 
-After the matching donors are placed into a list, two `sapply` functions are used to sift through the combined list to identify the donor data that belongs to their respective tissues. The matched donors of each tissue are placed into two separate lists under `donor_matched_tissue_1.matrix` and `donor_matched_tissue_2.matrix`. 
-```{r}
-tissue_pair_gene_expression <- function(tissue_1_matrix,tissue_2_matrix) {
-  ...
- ## Index the matching donors so as to remove any excess information
-  ind.tissue_1 = sapply(combined_tissue.subjects,function(x){
-    out = which(tissue_1.subjects == x)
-    return(out)
-  })
-  ind.tissue_2 = sapply(combined_tissue.subjects,function(x){
-    out = which(tissue_2.subjects == x)
-    return(out)
-  })
-  donor_matched_tissue_1.matrix = tissue_1_matrix[,ind.tissue_1]
-  donor_matched_tissue_2.matrix = tissue_2_matrix[,ind.tissue_2]
-  ...}
-```
-Next, the genes from each tissue are selected and compared to store matching genes in a list. The list of matching genes are attributed to the matching donors in the variables `final_tissue_1.matrix` and `final_tissue_2.matrix`.
 
-```{r}
-tissue_pair_gene_expression <- function(tissue_1_matrix,tissue_2_matrix) {
-  ...
- ## Perform similar data truncation with the gene information
-  tissue_1.genes <- rownames(tissue_1_matrix)
-  tissue_2.genes <- rownames(tissue_2_matrix)
-  combined_tissue.genes <- intersect(tissue_1.genes,tissue_2.genes)
-  ind.gene_tissue_1 = sapply(combined_tissue.genes,function(x){
-    out = which(tissue_1.genes == x)
-    return(out)
-  })
-  ind.gene_tissue_2 = sapply(combined_tissue.genes,function(x){
-    out = which(tissue_2.genes == x)
-    return(out)
-  })
-  final_tissue_1.matrix = donor_matched_tissue_1.matrix[ind.gene_tissue_1,]
-  final_tissue_2.matrix = donor_matched_tissue_2.matrix[ind.gene_tissue_2,]
-...}
-```
-<br/> Now that the matching donors and genes are known comparisons can be made for analysis. Each gene pair between both tissues are examined for their variance and the values are stored as a list in `gene_expression_variance`
-```{r}
- ## Solve for the variance within genes across donors
-tissue_pair_gene_expression <- function(tissue_1_matrix,tissue_2_matrix) {
-  ...
-  library(iemisc)
-  gene_expression_variance <- c()
-  for (i in 1:size(as.matrix(final_tissue_1.matrix),1)) {
-    gene_expression_variance[i] <- var(as.numeric(final_tissue_1.matrix[i,]),as.numeric(final_tissue_2.matrix[i,]))
-  }
 
-...}
-```
-The variances are then filtered according to variance percentage which is based on user input.
-```{r}
-tissue_pair_gene_expression <- function(tissue_1_matrix,tissue_2_matrix) {
-  ...
-## Filter for the most variable genes (based on input variance_percentage)
-  ind.variance <- which(gene_expression_variance >= quantile(gene_expression_variance, probs = 1 - .2)) #variance_percentage = 0.2
 
-  variable.tissue_1.genes <- final_tissue_1.matrix[ind.variance,]
-  variable.tissue_2.genes <- final_tissue_2.matrix[ind.variance,]
-...}
-```
-<br/> Lastly, the biweight midcorrelation analysis is run on the filtered genes producing a matrix of correlation values and a second list of pvalues. 
-```{r}
-tissue_pair_gene_expression <- function(tissue_1_matrix,tissue_2_matrix) {
-  ...
-  library(WGCNA)
-  gene_biweight_midcorrelation <- bicor(t(as.matrix(variable.tissue_1.genes)),t(as.matrix(variable.tissue_2.genes)))
-  pvalues_biweight <- bicorAndPvalue(t(as.matrix(variable.tissue_1.genes)),t(as.matrix(variable.tissue_2.genes)))$p
-  assign("gene_biweight_midcorrelation",gene_biweight_midcorrelation, envir = globalenv())
-  assign("pvalues_biweight",pvalues_biweight, envir = globalenv())
-...}
-```
-
-### gene_names()
-Takes in two tissue data sets and attempts to match the genes within both tissues. Returns two matrices for each tissue with the matching genes. This function is similar to the previous, `tissue_pair_expressions` but lacks the correlation and pvalue analysis. This function is strictly for acquiring two matricies of the matche genes across both tissues. 
-
-```{r}
-gene_names <- function(tissue_matrix_1,tissue_matrix_2){
-  ## Create a list of column names for downstream matching of donors
-  tissue_1.samples = colnames(tissue_1_matrix)
-  tissue_2.samples = colnames(tissue_2_matrix)
-
-  ## Separate strings of column names to match donor tag identifiers
-  tissue_1.subjects = sapply(tissue_1.samples,function(x){
-    subj = strsplit(x,'[-]')[[1]]
-    out = paste0(subj[1],'_',subj[2])
-    return(out)
-  })
-  tissue_2.subjects = sapply(tissue_2.samples,function(x){
-    subj = strsplit(x,'[-]')[[1]]
-    out = paste0(subj[1],'_',subj[2])
-    return(out)
-  })
-  combined_tissue.subjects = intersect(tissue_1.subjects,tissue_2.subjects)
-
-  ## Index the matching donors so as to remove non-matching information
-  ind.tissue_1 = sapply(combined_tissue.subjects,function(x){
-    out = which(tissue_1.subjects == x)
-    return(out)
-  })
-  ind.tissue_2 = sapply(combined_tissue.subjects,function(x){
-    out = which(tissue_2.subjects == x)
-    return(out)
-  })
-  donor_matched_tissue_1.matrix = tissue_1_matrix[,ind.tissue_1]
-  donor_matched_tissue_2.matrix = tissue_2_matrix[,ind.tissue_2]
-
-  ## Perform similar data truncation with the gene information
-  tissue_1.genes <- rownames(tissue_1_matrix)
-  tissue_2.genes <- rownames(tissue_2_matrix)
-  combined_tissue.genes <- intersect(tissue_1.genes,tissue_2.genes)
-  ind.gene_tissue_1 = sapply(combined_tissue.genes,function(x){
-    out = which(tissue_1.genes == x)
-    return(out)
-  })
-  ind.gene_tissue_2 = sapply(combined_tissue.genes,function(x){
-    out = which(tissue_2.genes == x)
-    return(out)
-  })
-  final_tissue_1.matrix = donor_matched_tissue_1.matrix[ind.gene_tissue_1,]
-  final_tissue_2.matrix = donor_matched_tissue_2.matrix[ind.gene_tissue_2,]
-
-  assign("final_tissue_1.matrix",final_tissue_1.matrix, envir = globalenv())
-  assign("final_tissue_2.matrix",final_tissue_2.matrix, envir = globalenv())
-
-}
-```
-The outputted matrices can be used for the `var_filter()` which returns matrices of the most variable genes based on user input. It is recommended that `gene_names()` be used prior to `var_filter()` so the necessary tissue matrices(`final_tissue_1.matrix` and `final_tissue_2.matrix`) are ready for input into the `var_filter` function. 
-<br/>
-
-### var_filter()
- Functions that takes tissue matrices and a given variance percentage and outputs matrices of the most variable genes for each tissue set. This function is primarily utilized with inputted tissue sets with matching donors and genes. Therefore the `var_filter` function serves as the supplement after the use of the function `gene_names` which outputs matching gene tissue matrices. This function will return two list of the most variable genes based on the `variance_percentage` parameter. 
-```{r}
-var_filter <- function(tissue_matrix_1,tissue_matrix_2,percentage_variance){
-
-  ## Solve for the variance within genes across donors
-  library(iemisc)
-  gene_expression_variance <- c()
-  for (i in 1:size(as.matrix(tissue_matrix_1),1)) {
-    gene_expression_variance[i] <- var(as.numeric(tissue_matrix_1[i,]),as.numeric(tissue_matrix_2[i,]))
-  }
-
-  gene_variance_test <- mcmapply(function(x) var(as.numeric(tissue_matrix_1[x,]),as.numeric(tissue_matrix_2[x,])),1:nrow(tissue_matrix_1))
-
-  ## Filter for the most variable genes (based on input variance_percentage)
-  ind.variance <- which(gene_expression_variance >= quantile(gene_expression_variance, probs = 1 - variance_percentage))
-
-  variable.tissue_1.genes <- tissue_matrix_1[ind.variance,]
-  variable.tissue_2.genes <- tissue_matrix_2[ind.variance,]
-
-  assign("variable.tissue_1.genes",variable.tissue_1.genes, envir = globalenv())
-  assign("variable.tissue_2.genes",variable.tissue_2.genes, envir = globalenv())
-}
-
-```
-
-### Future Function updates
--Plan on improving `tissue_pair_expression()` to allow for 'pearson' and 'spearman' correlations.
-
--Adding more functions that increase flexibility of analysis: ligand filtration
 
