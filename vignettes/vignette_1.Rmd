@@ -1,5 +1,5 @@
 ---
-title: "GeneExpCor_Vignette"
+title: "Gene Expressions Corrleation-R Package"
 author: "Felipe Barraza, Jon Blichar, Emmanuel Edu"
 date: "`r Sys.Date()`"
 output:
@@ -16,12 +16,9 @@ knitr::opts_chunk$set(
 )
 ```
 ## Overview
-This developing vignette is for the `geneExpCor` Rpackage which is capable of receiving tissue data and outputting correlation values corresponding to matching genes. Several functions are including that grant the user the capability to filter by variance percentage and by ligands. Main Functions:
+This developing vignette is for the `geneExpCor` Rpackage which is capable of receiving tissue data and outputting correlation values corresponding to matching genes. Several functions are included that grant the user the capability to filter by variance percentage and by ligands. The 'geneExpCor' package will produce histograms and scatter plots corresponding to a biweight midcorrelation statistical analysis conducted on the inputted gene data sets. The built-in gene data sets, sourced from the GTEx consortium portal, are included to examine the capabilites of the functions within the package. 
 
-- tissue_pair_expression()
-- gene_names()
-- var_filter()
-
+The objective of this software package is to identify putative endocrine interactions in a user-friendly way, and to compare organ communication discrepincies between males and females. The goal of this work is to build upon analyzing inter-tissue endocrine interactions utilizing bioinformatics methodologies. 
 
 ## Dependencies
 - `devtools`: https://cran.r-project.org/web/packages/devtools/index.html 
@@ -52,6 +49,8 @@ To properly use the following functions, the inputted data needs to be in a spec
 
 To properly access both datasets, we recommend attributing each set to a variable in the global enviornment. For example, run the following lines in the console: 
 ```{r}
+library(geneExpCor)
+
 tissue_1_data <- geneExpCor::subqAdipose_tissue_data
 tissue_2_data <- geneExpCor::stomach_tissue_data
 ```
@@ -68,62 +67,105 @@ Now that the gene map and both tissue sets have been loaded in the global enviro
 
 ## Formatting Data 
 
-### gene_names() - Filtering Data to Identify Matching Genes 
+### Filtering Data to Identify Matching Genes 
 To begin analysis the `gene_names` function will be used first. `gene_names()` takes in two tissue data sets and attempts to match the genes within both tissues and returns two matrices for each tissue with the matching genes. The `ensembl_map` parameter takes in a gene coding map to properly label the gene names in the dataset. 
 
 ```{r}
-gene_names <- function(tissue_1_matrix,tissue_2_matrix,ensembl_map){
-}
+gene_names(tissue_1_matrix = tissue_1_data, tissue_2_matrix = tissue_2_data, ensembl_map = gene_map)
 ```
 The outputted matrices are loaded in the global environment containing the matching donor and gene data present in both tissues. Therefore, both matricies have smaller dimensions than the original tissue data sets. 
 
-The `final_tissue.matrix` matricies are in the proper form and can be used for `var_filter()` and `tissue_pair_expression()`.
+```{r}
+# Checking Dimensions
+dim(final_tissue_1.matrix) 
+```
 
-## Functions
+The resulting matricies will have entries similar to the table below, where the rows represent the genes and columns are the samples. 
+```{r}
+final_tissue_1.matrix[1:3, 1:2]
+```
+After the raw data files have been formatted to relabel gene names and filtered for matching genes amongst both tissue sets, the `final_tissue.matrix` matricies are in the proper form and can be used for subsequent functions within the package. 
 
-### Inuput Parameters
-`tissue_1_matrix` - A matrix containing the tissue sample data of genes and donors.
-
-`tissue_2_matrix` - A matrix containing the tissue sample data of genes and donors.
-
-`ensembl_map` - Gene coding map
-
-`percentage_variance` - A decimal input specifying variance percentage for analysis
-
-## Output Variables
-`final_tissue_1.matrix` - Matrix containing the matching genes and donors from orginial tissue sets
-
-`final_tissue_2.matrix` - Matrix containing the matching genes and donors from orginial tissue sets
-
-`variable.tissue_1.genes` - Filtered set of most variable genes according to `percentage_variance` in `var_filter()`
-
-`variable.tissue_2.genes` - Filtered set of most variable genes according to `percentage_variance` in `var_filter()`
-
-`gene_biweight_midcorrelation()` - Large matrix containing the biweight midcorrelation coefficients for both tissue sets
-
-`pvalues_biweight` - Large matrix containing the pvalues for each gene across both tissues.
-
-### var_filter() - Filtering for Most Variable Genes
+## Conducting Gene Analysis
+```{r}
+library(iemisc)
+library(WGCNA)
+library(dplyr)
+library(parallel)
+```
+### Filtering for Most Variable Genes
 To filter tissue matricies according to variance, the `var_filter` function should be utilized. This function takes two tissue matrices and a variance percentage and outputs matrices of the most variable genes for each tissue set. This function is primarily utilized with tissue sets containing matching genes and donors: `final_tissue_1.matrix`. 
  
  This function will return two lists of the most variable genes based on the `variance_percentage` parameter. 
 ```{r}
-var_filter <- function(tissue_matrix_1,tissue_matrix_2, percentage_variance){
-}
+var_filter(final_tissue_1.matrix, final_tissue_2.matrix, 0.3)
 ```
+In the example above, the function is sifting through both gene data sets and filtering for the top 30 percent of most variable genes.
+
 The outputted matricies `variable.tissue_1.genes` and `variable.tissue_2.genes` contain the most variable genes amongst both tissue sets and will therefore have smaller dimensions than the inputted tissue sets. 
+```{r}
+#Check the Dimensions of the output matricies 
+dim(variable.tissue_1.genes) 
+```
 
 
-### tissue_pair_gene_expression() - Conducting Biweight Midcorrelation Analysis
+```{r}
+# View a section of the variance filtered matrix
+variable.tissue_1.genes[3:5, 3:4]
+
+```
+
+
+### Conducting Biweight Midcorrelation Analysis
 To conduct the biweight midcorrelation analysis on the tissue sets the `tissue_pair_gene_expression` function. 
 This function takes in two tissue matrices and return two large matrices containing biweight midcorrelation coefficients and pvalues associated with both tissue sets. 
+
 ```{r}
-tissue_pair_gene_expression <- function(tissue_1_matrix,tissue_2_matrix) {}
+tissue_pair_gene_expression(variable.tissue_1.genes, variable.tissue_2.genes)
 ```
 
-The outputted variables, `gene_biweight_midcorrelation` and `pvalues_biweight` are used to identify the corrlelations of the genes in both tissues matricies. 
+The outputted variables, `gene_biweight_midcorrelation` and `pvalues_biweight` are used to identify the corrlelations of the genes in both tissues matricies and are utilized to develop a series of plots to visualize the data. 
+
+## Generating Plots
+
+To properly create visuals for the analysis the matrix the pvalue matrix and biweight correlations from the `tissue_pair_gene_expression` function. The following code block produces a histogram using the inverse log pvalue data.  
+```{r}
+# Create a matrix of inverse log base 10 p-values
+logpvalues <- -log(pvalues_biweight)
+
+# Create a histogram of inverse log base 10 p-values
+hist(logpvalues,100)
+```
+ A histogram of the biweight correlations using the `gene_biweight_midcorrelation` matrix
+```{r}
+# Create a histogram of correlation coefficients
+hist(gene_biweight_midcorrelation)
+```
+More customized plots can be developed by identifying certain pvalues that lie above a particular threshold. In this case, the cutoff considers log pvalues above 150. This value is arbitrary and can be altered to find a specific range of pvalues. 
+```{r}
+# Find the indices for the p-values greater than some cutoff value
+cutoff.ind <- which(logpvalues >= 150, arr.ind = T)
+```
 
 
-
-
-
+The following code block generates a series of scatter plots according the size and values of the pvalue cutoff variable `cutoff.ind`. These scatter plots depict the pvalues between multiple gene pairs within the `final_tissue` matricies produced from the `gene_names` function.
+```{r}
+for (i in 1:(size(cutoff.ind,1) - 2)){
+  # Find the indices for the individual gene pairs for each run through the for loop
+  ind.variance <- which(pvalues_biweight == pvalues_biweight[cutoff.ind[i,1],cutoff.ind[i,2]], arr.ind = T)
+  
+  # Create variables containing the rownames and columnames to match gene names
+  rows <- rownames(pvalues_biweight)
+  columns <- colnames(pvalues_biweight)
+  
+  # Get the gene names for the highly correlated gene pair of interest
+  gene1 = rows[ind.variance[1]]
+  gene2 = columns[ind.variance[2]]
+  
+  # Find the indices of the highly correlated genes in our matrix of gene expressions
+  gene1.ind = which(rownames(final_tissue_1.matrix) == gene1)
+  gene2.ind = which(rownames(final_tissue_2.matrix) == gene2)
+  # Plot the expressions of the two genes with high degree of correlation
+  plot(as.numeric(final_tissue_1.matrix[gene1.ind,]),as.numeric(final_tissue_2.matrix[gene2.ind,]))
+}
+```
