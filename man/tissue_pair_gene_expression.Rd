@@ -2,19 +2,26 @@
 % Please edit documentation in R/tissue_pair_expression.R
 \name{tissue_pair_gene_expression}
 \alias{tissue_pair_gene_expression}
-\title{Gene Expression Correlations Amongst Tissue Samples.}
+\title{Bicor Analysis Functino //Working Title}
 \usage{
-tissue_pair_gene_expression(tissue_1_matrix, tissue_2_matrix)
+tissue_pair_gene_expression(
+  tissue_1_matrix,
+  tissue_2_matrix,
+  percentage_variance
+)
 }
 \arguments{
 \item{tissue_1_matrix}{A file containing gene-donor data of the first tissue}
 
 \item{tissue_2_matrix}{A file containing gene-donor data of the second tissue}
+
+\item{percentage_variance}{A decimal entry representing the variance percentage for gene analysis.}
 }
 \value{
-Biweight Mid correlations and P-values of gene comparisons across both tissue sets
+A series of plots in a pdf associated with the bicor midcorrelation analysis conducted on the inputted tissue matrices
 }
 \description{
-A package that takes two gene data files and conducts a biweight Midcorrelation analysis.
-The function will output two matrices containing the biweight midcorrelation correlation values and P-values.
+Takes in two tissue data sets and attempts to match the genes within both tissues.
+This function also attempts to label the genes with the proper gene names.
+Returns two matrices for each tissue with the matching genes.
 }

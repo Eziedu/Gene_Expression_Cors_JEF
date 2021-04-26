@@ -3,3 +3,4 @@
 export(gene_names)
 export(tissue_pair_gene_expression)
 export(var_filter)
+export(wrapper_func)

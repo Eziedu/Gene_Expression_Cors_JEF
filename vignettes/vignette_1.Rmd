@@ -16,11 +16,15 @@ knitr::opts_chunk$set(
 )
 ```
 ## Overview
-This developing vignette is for the `geneExpCor` Rpackage which is capable of receiving tissue data and outputting correlation values corresponding to matching genes. Several functions are included that grant the user the capability to filter by variance percentage and by ligands. The 'geneExpCor' package will produce histograms and scatter plots corresponding to a biweight midcorrelation statistical analysis conducted on the inputted gene data sets. The built-in gene data sets, sourced from the GTEx consortium portal, are included to examine the capabilites of the functions within the package. 
+This developing vignette is for the `geneExpCor` Rpackage which is capable of receiving tissue data and outputting correlation values corresponding to matching genes. The objective of this software package is to identify putative endocrine interactions in a user-friendly way, and to compare inter-tissue communication discrepincies between human males and females. Research using this particular kind of analysis can be useful for understanding the functionality between varying organ pairs and to disease pathology to a genetic degree. For example, researchers found that men and women have different fat distribution patterns that impact their risk for metabolic and cardiovascular diseases. Women store excess adipose tissue in the gluteofemoral region while men store it around their abdominal region. This discrepancy in adipose tissue storage is a notable factor in understanding why men are at higher risk for cardiovascular disease. 
 
-The objective of this software package is to identify putative endocrine interactions in a user-friendly way, and to compare organ communication discrepincies between males and females. The goal of this work is to build upon analyzing inter-tissue endocrine interactions utilizing bioinformatics methodologies. 
+The goal of this work is to build upon analyzing inter-tissue endocrine interactions utilizing bioinformatics methodologies. Several functions are included that grant the user the capability to filter by variance percentage and by ligands. The 'geneExpCor' package will produce histograms and scatter plots corresponding to a biweight midcorrelation statistical analysis conducted on the inputted gene data sets. The built-in gene data sets, sourced from the GTEx consortium portal, are included to examine the capabilites of the functions within the package. 
+
 
 ## Dependencies
+- `stats`: https://stat.ethz.ch/R-manual/R-devel/library/stats/html/stats-package.html 
+- `dynamicTreeCut`: https://cran.r-project.org/web/packages/dynamicTreeCut/index.html 
+- `fastcluster`: https://cran.r-project.org/web/packages/fastcluster/vignettes/fastcluster.pdf 
 - `devtools`: https://cran.r-project.org/web/packages/devtools/index.html 
 - `testthat`: https://testthat.r-lib.org/ Version 3.0 or above
 - `WGCNA`: https://horvath.genetics.ucla.edu/html/CoexpressionNetwork/Rpackages/WGCNA/ 
@@ -28,13 +32,15 @@ The objective of this software package is to identify putative endocrine interac
 - `dpylr`: https://www.tidyverse.org/ 
 - `parallel`: https://stat.ethz.ch/R-manual/R-devel/library/parallel/doc/parallel.pdf 
 
+
 ## Installation
 
 ### 1. Installing From Github
 After dependencies have been installed and loaded, installing `geneExpCor` from github requires the following line:  
-
- `devtools::install_github("Eziedu/Gene_Expression_Cors_JEF")`
-
+```{r message = FALSE, warning= FALSE}
+  library(devtools)
+  devtools::install_github("Eziedu/Gene_Expression_Cors_JEF")
+```
 ### 1.2 Addressing Installation Errors
 If there is an error with loading `devtools`, it is most likely due to a version issue. The devtools package uses the `testthat`package, and in order for devtools to run appropriately the loaded `testhat` package needs to be of version 3.0 or higher.
 
@@ -45,7 +51,16 @@ If a simple update does not solve the problem, run the following line to update 
 Follow the installation process as you see fit, afterwards the `testthat` package should update to version 3.0 or above. 
 
 ### 2. Loading Necessary Data
-To properly use the following functions, the inputted data needs to be in a specific format. To allow for easy testing, the package comes with two preinstalled tissue datasets: `subqAdipose_tissue_data` and `stomach_tissue_data`.
+```{r message=FALSE, warning=FALSE}
+library(stats) 
+library(iemisc)
+library(dynamicTreeCut) 
+library(fastcluster) 
+library(WGCNA)
+library(dplyr)
+library(parallel)
+```
+To properly use the following functions, the inputted data needs to be in a specific format. To allow for easy testing, the package comes with two preinstalled tissue datasets: `subqAdipose_tissue_data` and `stomach_tissue_data`. 
 
 To properly access both datasets, we recommend attributing each set to a variable in the global enviornment. For example, run the following lines in the console: 
 ```{r}
@@ -53,31 +68,30 @@ library(geneExpCor)
 
 tissue_1_data <- geneExpCor::subqAdipose_tissue_data
 tissue_2_data <- geneExpCor::stomach_tissue_data
-```
-Addtionally a gene mapping dataset will need to be loaded to properly label gene names during analysis. This map is referred to as 'gene_map' and we recommend to load this data into the global enviornment. 
 
-```{r}
-gene_map <- geneExpCor::gencode_gene_map
 ```
 
-The `gene_map` variable can now be used for susequent functions with the `ensembl_map` parameter. 
-
-Now that the gene map and both tissue sets have been loaded in the global environment, they can be used as arguments to fulfill the `tissue_matrix` parameters for all functions in the package. 
-
+```{r include = FALSE}
+gene_map <- geneExpCor::gencode_gene_map ###NEEDS TO BE REMOVED AT SOME POINT!!!
+```
 
 ## Formatting Data 
+To provide a working example, the `subqAdipose_tissue_data` and `stomach_tissue_data` data sets will be used as the primary tissue files when examining the vignette. 
 
 ### Filtering Data to Identify Matching Genes 
-To begin analysis the `gene_names` function will be used first. `gene_names()` takes in two tissue data sets and attempts to match the genes within both tissues and returns two matrices for each tissue with the matching genes. The `ensembl_map` parameter takes in a gene coding map to properly label the gene names in the dataset. 
 
-```{r}
-gene_names(tissue_1_matrix = tissue_1_data, tissue_2_matrix = tissue_2_data, ensembl_map = gene_map)
+To begin analysis the `gene_names` function will be used first. `gene_names()` takes in two tissue data sets and attempts to match the genes within both tissues and returns two matrices for each tissue with the matching genes. 
+
+```{r options(width = 300)}
+gene_names(tissue_1_matrix = tissue_1_data, tissue_2_matrix = tissue_2_data, 
+           ensembl_map = gene_map)
 ```
-The outputted matrices are loaded in the global environment containing the matching donor and gene data present in both tissues. Therefore, both matricies have smaller dimensions than the original tissue data sets. 
+The outputted matrices, `final_tissue_1.matrix` and `final_tissue_2.materix`, are loaded in the global environment containing the matching donor and gene data present in both tissues. Examining the dimensions of the matrices can serve as a check to ensure that the outputs are appropriately filtered. The resulting matrices will have smaller dimensions that their original tissue sets. In the example, `final_tissue_1.matrix` has smaller dimensions compared to the original tissue data file, `tissue_1_data`.   
 
 ```{r}
-# Checking Dimensions
-dim(final_tissue_1.matrix) 
+# Checking Dimensions of original tissue files
+dim(tissue_1_data) # 24665 BY 581
+dim(final_tissue_1.matrix) # 22699 BY 244
 ```
 
 The resulting matricies will have entries similar to the table below, where the rows represent the genes and columns are the samples. 
@@ -87,12 +101,7 @@ final_tissue_1.matrix[1:3, 1:2]
 After the raw data files have been formatted to relabel gene names and filtered for matching genes amongst both tissue sets, the `final_tissue.matrix` matricies are in the proper form and can be used for subsequent functions within the package. 
 
 ## Conducting Gene Analysis
-```{r}
-library(iemisc)
-library(WGCNA)
-library(dplyr)
-library(parallel)
-```
+
 ### Filtering for Most Variable Genes
 To filter tissue matricies according to variance, the `var_filter` function should be utilized. This function takes two tissue matrices and a variance percentage and outputs matrices of the most variable genes for each tissue set. This function is primarily utilized with tissue sets containing matching genes and donors: `final_tissue_1.matrix`. 
  
@@ -102,13 +111,23 @@ var_filter(final_tissue_1.matrix, final_tissue_2.matrix, 0.3)
 ```
 In the example above, the function is sifting through both gene data sets and filtering for the top 30 percent of most variable genes.
 
-The outputted matricies `variable.tissue_1.genes` and `variable.tissue_2.genes` contain the most variable genes amongst both tissue sets and will therefore have smaller dimensions than the inputted tissue sets. 
+
+The outputted matricies `variable.tissue_1.genes` and `variable.tissue_2.genes` contain the most variable genes amongst both tissue sets and will therefore have smaller dimensions than the inputted tissue sets. The amount of donors, columns, remains the same, since the `var_filter()` is only filtering genes. 
+
+Checking the dimensions is a brief method to ensure that the function is filtering the genes accordingly. For the var_filter(), the number of rows of the resulting matrices should be smaller than the inputted matrices. Additionally, both of the produced data sets will have equal dimensions.
+
+In the ongoing example, the resulting tissue matrix,`variable.tissue_1.genes` has a smaller list of genes than the inputted matrix `final_tissue_1.matrix`. Check to ensure that this is the case. 
 ```{r}
-#Check the Dimensions of the output matricies 
-dim(variable.tissue_1.genes) 
+#Check the Dimensions of the inputted matrices
+dim(final_tissue_1.matrix) #22699 BY 244 
+
+#Check the Dimensions of the outputted matricies 
+dim(variable.tissue_1.genes) #6810 BY 244
+
+dim(variable.tissue_2.genes) #6810 BY 244
 ```
 
-
+The following is a selection from the `variable.tissue_1.genes` matrix acquired from the `var_filter` function using the data in the example.
 ```{r}
 # View a section of the variance filtered matrix
 variable.tissue_1.genes[3:5, 3:4]
@@ -120,7 +139,7 @@ variable.tissue_1.genes[3:5, 3:4]
 To conduct the biweight midcorrelation analysis on the tissue sets the `tissue_pair_gene_expression` function. 
 This function takes in two tissue matrices and return two large matrices containing biweight midcorrelation coefficients and pvalues associated with both tissue sets. 
 
-```{r}
+```{r message=FALSE, warning=FALSE}
 tissue_pair_gene_expression(variable.tissue_1.genes, variable.tissue_2.genes)
 ```
 
@@ -152,7 +171,8 @@ The following code block generates a series of scatter plots according the size 
 ```{r}
 for (i in 1:(size(cutoff.ind,1) - 2)){
   # Find the indices for the individual gene pairs for each run through the for loop
-  ind.variance <- which(pvalues_biweight == pvalues_biweight[cutoff.ind[i,1],cutoff.ind[i,2]], arr.ind = T)
+  ind.variance <- which(pvalues_biweight == 
+                          pvalues_biweight[cutoff.ind[i,1],cutoff.ind[i,2]], arr.ind = T)
   
   # Create variables containing the rownames and columnames to match gene names
   rows <- rownames(pvalues_biweight)
@@ -166,6 +186,9 @@ for (i in 1:(size(cutoff.ind,1) - 2)){
   gene1.ind = which(rownames(final_tissue_1.matrix) == gene1)
   gene2.ind = which(rownames(final_tissue_2.matrix) == gene2)
   # Plot the expressions of the two genes with high degree of correlation
-  plot(as.numeric(final_tissue_1.matrix[gene1.ind,]),as.numeric(final_tissue_2.matrix[gene2.ind,]))
+  plot(as.numeric(final_tissue_1.matrix[gene1.ind,]),
+       as.numeric(final_tissue_2.matrix[gene2.ind,]), 
+       xlab="Expression in Subcutaneous Adipose Tissue", ylab="Expression in Stomach Tissue")
 }
 ```
+

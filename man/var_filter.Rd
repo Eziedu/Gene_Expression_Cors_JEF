@@ -4,7 +4,12 @@
 \alias{var_filter}
 \title{Variance Filter Function}
 \usage{
-var_filter(tissue_matrix_1, tissue_matrix_2, percentage_variance)
+var_filter(
+  tissue_matrix_1,
+  tissue_matrix_2,
+  percentage_variance,
+  plot_option = FALSE
+)
 }
 \arguments{
 \item{tissue_matrix_1}{A file containing gene-donor data of the first tissue. Recommend using 'final_tissue_1.matrix' acquired from the use of gene_names()}

@@ -4,14 +4,12 @@
 \alias{gene_names}
 \title{Matrices of Matching Genes}
 \usage{
-gene_names(tissue_1_matrix, tissue_2_matrix, ensembl_map)
+gene_names(tissue_1_matrix, tissue_2_matrix)
 }
 \arguments{
 \item{tissue_1_matrix}{A file containing gene-donor data of the first tissue}
 
 \item{tissue_2_matrix}{A file containing gene-donor data of the second tissue}
-
-\item{ensembl_map}{A gene mapping file used to attribute genes to their respective names. Use: gene_map from 2. in the Installation section of the vignette.}
 }
 \value{
 Two matrices with matching donors and genes across both tissue sets. Both outputted matrices are viable for correlation analysis as inputs for the function
