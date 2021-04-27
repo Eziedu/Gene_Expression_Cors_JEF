@@ -9,7 +9,7 @@ wrapper_func(
   tissue2,
   var_perc = 0.05,
   var_perc2 = 1e-04,
-  var_plot = FALSE
+  var_plot = TRUE
 )
 }
 \arguments{
