@@ -56,7 +56,7 @@ tissue_pair_gene_expression <- function(tissue_1_matrix,tissue_2_matrix,percenta
   # Normalize the scores for the origin tissue ligand encoding genes, add gene name identifiers, arrange in descending order
   library(dplyr)
   Ssec = data.frame(Gene_symbol = names(scores), score = scores) %>%
-    mutate(Ssec = score / length(rownames(tissue_2_matrix))) %>%
+    mutate(Ssec = score / length(colnames(tissue_2_matrix))) %>%
     arrange(desc(Ssec))
   Ssec = Ssec[,c(1,3)]
 
