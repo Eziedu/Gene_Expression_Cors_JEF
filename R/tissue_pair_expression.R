@@ -1,5 +1,5 @@
 #'
-#' Bicor Analysis Functino //Working Title
+#' Bicor Analysis Function //Working Title
 #'
 #'Takes in two tissue data sets and attempts to match the genes within both tissues.
 #'This function also attempts to label the genes with the proper gene names.
