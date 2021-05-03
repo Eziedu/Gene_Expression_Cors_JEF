@@ -2,7 +2,7 @@
 % Please edit documentation in R/tissue_pair_expression.R
 \name{tissue_pair_gene_expression}
 \alias{tissue_pair_gene_expression}
-\title{Bicor Analysis Functino //Working Title}
+\title{Bicor Analysis Function //Working Title}
 \usage{
 tissue_pair_gene_expression(
   tissue_1_matrix,
