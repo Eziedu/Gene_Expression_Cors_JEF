@@ -9,7 +9,7 @@
 #' @param var_plot Boolean value for whether you would like histogram visual of gene variances
 #' @export
 #'
-wrapper_func <- function(tissue1, tissue2, var_perc=.05,var_perc2=.0001,var_plot = TRUE) {
+wrapper_func <- function(tissue1, tissue2, var_perc=.05,var_perc2=.0001,var_plot = FALSE) {
 
   # filter tissue matrices to retain matching genes and subjects
   out.pair <- gene_names(tissue1, tissue2)

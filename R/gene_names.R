@@ -20,12 +20,12 @@ gene_names <- function(tissue_1_matrix,tissue_2_matrix){
 
   ## Separate strings of column names to match donor tag identifiers
   tissue_1.subjects = sapply(tissue_1.samples,function(x){
-    subj = strsplit(x,'[-]')[[1]]
+    subj = strsplit(x,'[.]')[[1]]
     out = paste0(subj[1],'_',subj[2])
     return(out)
   })
   tissue_2.subjects = sapply(tissue_2.samples,function(x){
-    subj = strsplit(x,'[-]')[[1]]
+    subj = strsplit(x,'[.]')[[1]]
     out = paste0(subj[1],'_',subj[2])
     return(out)
   })
@@ -64,8 +64,5 @@ gene_names <- function(tissue_1_matrix,tissue_2_matrix){
 
   matched_pairs = list(tissue_1 = final_tissue_1.matrix,tissue_2 = final_tissue_2.matrix)
   assign('matched_pairs',matched_pairs,envir = globalenv())
-  ##MAJOR EDIT
-  assign('final_tissue_1.matrix', final_tissue_1.matrix, envir = globalenv())
-  assign('final_tissue_2.matrix', final_tissue_2.matrix, envir = globalenv())
   return(matched_pairs)
 }

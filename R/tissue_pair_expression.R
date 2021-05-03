@@ -48,7 +48,7 @@ tissue_pair_gene_expression <- function(tissue_1_matrix,tissue_2_matrix,percenta
 
   # Plot the distribution of inverse log pvalues for origin tissue genes encoding secreted proteins
   hist(pvalues_ligand_filtered, main = 'Histogram of Inverse Log Pvalues for Origin Tissue Ligand Secreting Genes',xlab = 'Inverse Log Pvalue Magnitude',ylab = 'Frequency', breaks = 100)
-  abline(v=quantile(pvalues_ligand_filtered, probs = 1 - percentage_variance))
+  abline(v=quantile(pvalues_ligand_filtered, probs = 1 - percentage_variance), col = 'red')
 
   # Create an array of scores for each ligand encoding gene in the origin tissue
   scores <- rowSums(pvalues_ligand_filtered)
@@ -56,7 +56,7 @@ tissue_pair_gene_expression <- function(tissue_1_matrix,tissue_2_matrix,percenta
   # Normalize the scores for the origin tissue ligand encoding genes, add gene name identifiers, arrange in descending order
   library(dplyr)
   Ssec = data.frame(Gene_symbol = names(scores), score = scores) %>%
-    mutate(Ssec = score / length(rownames(tissue_2_matrix))) %>%
+    mutate(Ssec = score / length(colnames(tissue_2_matrix))) %>%
     arrange(desc(Ssec))
   Ssec = Ssec[,c(1,3)]
 
@@ -71,7 +71,8 @@ tissue_pair_gene_expression <- function(tissue_1_matrix,tissue_2_matrix,percenta
   colnames(pvalue.data) = c('Gene_symbol_1', 'Gene_symbol_2', 'pvalue')
 
   # Isolate data for the origin gene with the highest Ssec score
-  gene_interest= filter(bicor.data, Gene_symbol_1 == Ssec[1,1]) %>%
+  ##MAJOR EDIT: added toString()
+  gene_interest= filter(bicor.data, Gene_symbol_1 == toString( Ssec[1,1]) ) %>%
     rename(Gene_symbol = Gene_symbol_2)
   gene_interest = gene_interest[,c(2,3)]
 
@@ -110,7 +111,7 @@ tissue_pair_gene_expression <- function(tissue_1_matrix,tissue_2_matrix,percenta
     # Plot the expressions of the two genes with high degree of correlation
     plot(as.numeric(matched_pairs$tissue_1[gene1.ind,]),as.numeric(matched_pairs$tissue_2[gene2.ind,]),main = 'Gene Pair Expression',xlab = gene.name1,ylab = gene.name2)
     # Add the linear regression line to the plot
-    abline(as.numeric(I$coefficients[1]),as.numeric(I$coefficients[2]))
+    abline(as.numeric(I$coefficients[1]),as.numeric(I$coefficients[2]), col = 'red')
   }
   dev.off()
 }
